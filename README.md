@@ -1,3 +1,6 @@
+## ⚠ Development of this addon is stopped ⚠  
+If someone wants to continue developing this addon, please send me a message. I'll transfer ownership to you on CurseForge.
+
 <h2>World of Warcraft AddOn - Death analysis tool.</h2>
 <p>Death Note records the events preceding a death and presents them to you in a comprehensible manner. If you have used Acheron before, this addon has been inspired by it.</p>
 <h2 id="w-how-to-use">How to use</h2>
