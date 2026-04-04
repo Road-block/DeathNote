@@ -1,4 +1,5 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("DeathNote")
+local addonName, addon = ...
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 DeathNote.OptionsDefaults = {
 	profile = {
@@ -74,6 +75,9 @@ DeathNote.OptionsDefaults = {
 		quick_spell_search = {
 			only_hl = false,
 		},
+		minimap = {
+			hide = false,
+		}
 	},
 }
 
@@ -87,12 +91,28 @@ DeathNote.Options = {
 			args = {
 				unit_menu = {
 					order = 1,
-					name = L["Show in the unit popup menu (requires a UI reload)"],
-					desc = L["Enabling this option will taint the unit popup menu and will prevent some options from working (such as setting a focus target)"],
+					name = L["Show in the unit popup menu"],
 					type = "toggle",
 					width = "double",
 					get = function() return DeathNote.settings.unit_menu end,
 					set = function(_, v) DeathNote.settings.unit_menu = v end,
+				},
+				minimap = {
+					order = 2,
+					name = L["Hide Minimap button"],
+					type = "toggle",
+					width = "double",
+					get = function() return DeathNote.settings.minimap.hide end,
+					set = function(_, v)
+						DeathNote.settings.minimap.hide = v
+						if DeathNote.LDBI then
+							if DeathNote.settings.minimap.hide then
+								DeathNote.LDBI:Hide(addonName)
+							else
+								DeathNote.LDBI:Show(addonName)
+							end
+						end
+					end,
 				},
 			},
 		},

@@ -1,3 +1,4 @@
+local addonName, addon = ...
 DeathNote.SurvivalIDs = {
 	[48707] =	{ class = "DEATHKNIGHT", priority = 1 },
 	[50461] =	{ class = "DEATHKNIGHT", priority = 2  },
@@ -66,11 +67,20 @@ DeathNote.SurvivalIDs = {
 	[118038] =	{ class = "WARRIOR", priority = 2 },
 	[122973] =	{ class = "WARRIOR", priority = 1 },
 
-};
+}
+local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or _G.RAID_CLASS_COLORS
 
-DeathNote.SurvivalColors = { };
+DeathNote.SurvivalColors = { }
 for class, color in pairs(RAID_CLASS_COLORS) do
-	local class_color = RAID_CLASS_COLORS[class];
-	local color = { r = class_color.r, g  = class_color.g, b = class_color.b, a = 0.2 };
-	DeathNote.SurvivalColors[class] = color;
+	local class_color = RAID_CLASS_COLORS[class]
+	local color = { r = class_color.r, g  = class_color.g, b = class_color.b, a = 0.2 }
+	DeathNote.SurvivalColors[class] = color
+end
+
+function DeathNote:PruneSurvivalIDs()
+	for spellID, data in pairs(DeathNote.SurvivalIDs) do
+		if not C_Spell.DoesSpellExist(spellID) then
+			DeathNote.SurvivalIDs[spellID] = nil
+		end
+	end
 end

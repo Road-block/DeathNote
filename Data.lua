@@ -1,3 +1,4 @@
+local addonName, addon = ...
 -- Death iterator
 local function DeathIterator(state)
 	repeat
@@ -173,6 +174,8 @@ local event_reader_table = {
 	["SPELL_INSTAKILL"]			= { TypeInstakill, SpellInstakillAmount, nil, SpellSpellId },
 
 	["UNIT_DIED"] 				= { TypeDeath },
+	["UNIT_DESTROYED"]		= { TypeDeath },
+	["UNIT_DISSIPATES"]		= { TypeDeath },
 }
 
 local function GetEntryReader(entry, nreader)
@@ -303,7 +306,7 @@ end
 
 local auras_broken = {} -- dispel, steal, break
 local survival_stack = {}
-local string_find = string.find;
+local string_find = string.find
 function DeathNote:ResetFiltering()
 	wipe(auras_broken)
 	wipe(survival_stack)
@@ -395,15 +398,15 @@ function DeathNote:IsEntryFiltered(entry)
 	
 	-- SearchBox filtering
 	if (self.settings.searchbox_text ~= nil and self.settings.searchbox_text ~= "") then
-		local _, spellname = self:GetEntrySpell(entry);
+		local _, spellname = self:GetEntrySpell(entry)
 		if (DeathNote.settings.quick_spell_search.only_hl) then
 			
 		else
 			if (spellname == nil) then
-				return false;
+				return false
 			else
 				if (not string_find(spellname:lower(), self.settings.searchbox_text:lower())) then
-					return false;
+					return false
 				end
 			end
 		end

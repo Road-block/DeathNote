@@ -1,10 +1,19 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("DeathNote")
-
-DeathNote = LibStub("AceAddon-3.0"):NewAddon("DeathNote", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0")
-
+local addonName, addon = ...
+local compat = addon.compat
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
+DeathNote = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0")
+DeathNote.LDBO = LibStub("LibDataBroker-1.1"):NewDataObject(addonName)
+DeathNote.LDBI = LibStub("LibDBIcon-1.0")
 -- Bindings text
 BINDING_HEADER_DEATH_NOTE = L["Death Note"]
 BINDING_NAME_DEATH_NOTE_SHOW_TARGET_DEATH = L["Show target deaths"]
+
+-- use a separate frome to avoid CBH/AceTimer overhead
+DeathNote.cleu_parser = CreateFrame("Frame")
+DeathNote.cleu_parser.OnEvent = function(self,event,...)
+	return DeathNote[event] and DeathNote[event](DeathNote,event,...)
+end
+DeathNote.cleu_parser:SetScript("OnEvent", DeathNote.cleu_parser.OnEvent)
 
 function DeathNote:OnInitialize()
 	-- AceDB options
@@ -15,15 +24,16 @@ function DeathNote:OnInitialize()
 	self.settings.others_death_time = 0
 
 	-- Register options
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Death Note", self.Options)
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Death Note", L["Death Note"])
+	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, self.Options)
+	local _
+	_, self.optID = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, L["Death Note"])
 	
 	local function ChatCommand(msg)
 		if (msg == "reset") then
-			DeathNote:ResetData();
-			DeathNote:UpdateLDB();
+			DeathNote:ResetData()
+			DeathNote:UpdateLDB()
 		else
-			DeathNote:Show();
+			DeathNote:Show()
 		end
 	end
 	
@@ -31,37 +41,36 @@ function DeathNote:OnInitialize()
 	self:RegisterChatCommand("deathnote", ChatCommand)
 	self:RegisterChatCommand("dn", ChatCommand)
 
-	-- Register LDB object
-	self.ldb = LibStub("LibDataBroker-1.1"):NewDataObject("Death Note", {
-		type = "data source",
-		label = "|cFF8F8F8F" .. L["Death Note"] .. "|r",
-		text = "|cFF8F8F8F" .. L["Death Note"] .. "|r",
-		icon = [[Interface\AddOns\DeathNote\Textures\icon.tga]],
-		OnClick = function(self, button)
-			if button == "LeftButton" then
-				if IsShiftKeyDown() then
-					DeathNote:CleanData(true)
-					collectgarbage("collect")
-					DeathNote:UpdateLDB()
-				elseif IsControlKeyDown() then
-					DeathNote:ResetData()
-					DeathNote:UpdateLDB()
-				else
-					DeathNote:ShowUnit(UnitName("target"))
-				end
-			elseif button == "RightButton" then
-				Settings.OpenToCategory(L["Death Note"])
+	-- Configure LDB object
+	DeathNote.LDBO.type = "data source"
+	DeathNote.LDBO.label = "|cFF8F8F8F" .. L["Death Note"] .. "|r"
+	DeathNote.LDBO.text = "|cFF8F8F8F" .. L["Death Note"] .. "|r"
+	DeathNote.LDBO.icon = [[Interface\AddOns\DeathNote\Textures\icon.tga]]
+	DeathNote.LDBO.OnClick = function(self, button)
+		if button == "LeftButton" then
+			if IsShiftKeyDown() then
+				DeathNote:CleanData(true)
+				collectgarbage("collect")
+				DeathNote:UpdateLDB()
+			elseif IsControlKeyDown() then
+				DeathNote:ResetData()
+				DeathNote:UpdateLDB()
+			else
+				DeathNote:ShowUnit(GetUnitName("target",true))
 			end
-		end,
-		OnTooltipShow = function(tooltip)
-			tooltip:AddLine(L["Death Note"])
-			tooltip:AddLine(L["|cFFEDA55FClick|r to open Death Note. |cFFEDA55FRight-Click|r to show options. |cFFEDA55FShift-Click|r to optimize data. |cFFEDA55FCtrl-Click|r to reset data."], 0.2, 1, 0.2, 1)
-		end,
-	})
-	
+		elseif button == "RightButton" then
+			Settings.OpenToCategory(DeathNote.optID)
+		end
+	end
+	DeathNote.LDBO.OnTooltipShow = function(tooltip)
+		tooltip:AddLine(L["Death Note"])
+		tooltip:AddLine(L["MINIMAP_ICON_TOOLTIP"], 0.2, 1, 0.2, 1)
+	end
+	DeathNote.LDBI:Register(addonName, DeathNote.LDBO, DeathNote.settings.minimap)
+
 	-- Take over the Blizzard death recap button
 	OpenDeathRecapUI = function ()
-		DeathNote:ShowUnit(UnitName("player"))
+		DeathNote:ShowUnit(GetUnitName("player",true))
 	end
 
 	self:DataCapture_Initialize()
@@ -72,7 +81,8 @@ function DeathNote:OnInitialize()
 end
 
 function DeathNote:OnEnable()
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self:PruneSurvivalIDs()
+	self.cleu_parser:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -86,12 +96,16 @@ function DeathNote:OnEnable()
 	if self.settings.debugging then
 		self:Show()
 	end
+
+	self:InstallRecap()
 end
 
 function DeathNote:OnDisable()
+	self.cleu_parser:UnregisterAllEvents()
 	self:UnregisterAllEvents()
 	self.db.UnregisterAllCallbacks(self)
 	self:CancelAllTimers()
+	self:UninstallRecap()
 end
 
 -- Replaces AceConsole:Print so that the addon name can be localized
@@ -114,7 +128,51 @@ function DeathNote:Debug(...)
 end
 
 function DeathNote:UpdateLDB()
-	self.ldb.text = string.format(L["%i deaths"], #DeathNoteData.deaths)
+	self.LDBO.text = string.format(L["%i deaths"], #DeathNoteData.deaths)
+end
+
+-- Custom recap button for Classic clients
+function DeathNote:InstallRecap()
+	if not self.PlayerRecap then
+		self.PlayerRecap = CreateFrame("Button", "DeathNotePlayerRecapButton", UIParent, "UIPanelButtonTemplate")
+		self.PlayerRecap:SetSize(120,22)
+		self.PlayerRecap:SetText(L["Death Note"])
+		self.PlayerRecap:SetScript("OnClick", function()
+			local name = GetUnitName("player",true)
+			if name then
+				DeathNote:ShowUnit(name)
+			end
+		end)
+	end
+	self:SecureHook("StaticPopup_Show", function(which)
+		if not (which and which == "DEATH") then return end
+		local dialog = StaticPopup_FindVisible("DEATH")
+		if dialog then
+			if DeathNote.PlayerRecap then
+				DeathNote.PlayerRecap:ClearAllPoints()
+				DeathNote.PlayerRecap:SetPoint("TOPRIGHT",dialog,"BOTTOMRIGHT",-2,-2)
+				DeathNote.PlayerRecap:Show()
+			end
+		end
+	end)
+	self:SecureHook("StaticPopup_Hide", function(which)
+		if not (which and which == "DEATH") then return end
+		if DeathNote.PlayerRecap and DeathNote.PlayerRecap:IsVisible() then
+			DeathNote.PlayerRecap:Hide()
+		end
+	end)
+end
+
+function DeathNote:UninstallRecap()
+	if self:IsHooked("StaticPopup_Show") then
+		self:Unhook("StaticPopup_Show")
+	end
+	if self:IsHooked("StaticPopup_Hide") then
+		self:Unhook("StaticPopup_Hide")
+	end
+	if self.PlayerRecap and self.PlayerRecap:IsVisible() then
+		self.PlayerRecap:Hide()
+	end
 end
 
 ------------------------------------------------------------------------------
@@ -124,7 +182,7 @@ end
 function DeathNote:SendReport(channel, arg)
 	local target
 	if channel == "WHISPER" then
-		target = UnitName("target")
+		target = GetUnitName("target",true)
 		if not target then
 			return
 		end
@@ -140,7 +198,7 @@ function DeathNote:SendReport(channel, arg)
 	end
 
 	local msg = string.format(L["Death Note: Death report for %s at %s"], self.current_death.name, date("%X", self.current_death.timestamp))
-	SendChatMessage(msg, channel, nil, target)
+	compat.SendChatMessage(msg, channel, nil, target)
 
 	self.report_line_count = 0
 	for i = self.dropdown_line, 1, -1 do

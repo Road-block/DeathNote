@@ -1,4 +1,5 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("DeathNote", "enUS", true);
+local addonName, addon = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 L = L or {}
 --[===[@non-debug@
 @localization(locale="enUS", format="lua_additive_table", handle-unlocalized="english", table-name="L")@
@@ -116,7 +117,7 @@ L["selector:search"] = "Search:"
 L["Send report from this line"] = "Send report from this line"
 L["Setting scale to %i%%"] = "Setting scale to %i%%"
 L["Show Death Note"] = "Show Death Note"
-L["Show in the unit popup menu (requires a UI reload)"] = "Show in the unit popup menu (requires a UI reload)"
+L["Show in the unit popup menu"] = "Show in the unit popup menu"
 L["Show target deaths"] = "Show target deaths"
 L["Sort deaths by"] = "Sort deaths by"
 L["Source"] = "Source"
@@ -140,5 +141,7 @@ L["Whisper target"] = "Whisper target"
 L["You were killed by"] = "You were killed by"
 L["Your pet"] = "Your pet"
 L["Log entries to show in death log (reduce if game crashes)"] = "Log entries to show in death log (reduce if game crashes)"
+L["Hide Minimap button"] = "Hide Minimap button"
+L["MINIMAP_ICON_TOOLTIP"] = "|cFFEDA55FClick|r to open Death Note.|n|cFFEDA55FRight-Click|r to show options.|n|cFFEDA55FShift-Click|r to optimize data.|n|cFFEDA55FCtrl-Click|r to reset data."
 
 --@end-debug@

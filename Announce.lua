@@ -1,13 +1,15 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("DeathNote")
+local addonName, addon = ...
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local announced_deaths = {}
 local skipped_deaths = 0
 local skip_timer
+local difficultyLFR = DifficultyUtil and DifficultyUtil.ID.PrimaryRaidLFR or 17
 
 function DeathNote:AnnounceDeath(death)
 	if not self.settings.announce.enable then return end
-	local difficultyID = GetRaidDifficultyID();
-	if (difficultyID ~= nil and difficultyID == 17 and not self.settings.announce.lfr) then return end
+	local difficultyID = GetRaidDifficultyID()
+	if (difficultyID and difficultyID == difficultyLFR and not self.settings.announce.lfr) then return end
 
 	local now = GetTime()
 	local tensecs = now - 10

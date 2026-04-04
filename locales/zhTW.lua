@@ -1,4 +1,5 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("DeathNote", "zhTW");
+local addonName, addon = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhTW")
 L = L or {}
 --[===[@non-debug@
 @localization(locale="zhTW", format="lua_additive_table", handle-unlocalized="english", table-name="L")@

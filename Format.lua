@@ -1,11 +1,14 @@
+local addonName, addon = ...
+local compat = addon.compat
 -- luacheck: globals LibStub C_Spell
 
-local L = LibStub("AceLocale-3.0"):GetLocale("DeathNote")
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
-local tinsert = table.insert;
-local floor = math.floor;
-local SCHOOL_MASK_PHYSICAL = 1;
-local C_Spell_GetSpellInfo, C_Spell_GetSpellLink = C_Spell.GetSpellInfo, C_Spell.GetSpellLink;
+local tinsert = table.insert
+local floor = math.floor
+local SCHOOL_MASK_PHYSICAL = 1
+local C_Spell_GetSpellInfo, C_Spell_GetSpellLink = C_Spell.GetSpellInfo, C_Spell.GetSpellLink
+local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or _G.RAID_CLASS_COLORS
 
 local function CommaNumber(num)
 	local found
@@ -89,11 +92,13 @@ local function GetUnitColor(guid, unit, flags)
 	local c
 
 	if unit then
-		c = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+		local class, eClass = UnitClass(unit)
+		c = RAID_CLASS_COLORS[eClass]
 	end
 
 	if not c and guid then
-		c = RAID_CLASS_COLORS[select(2, GetPlayerInfoByGUID(guid))]
+		local class, eClass = GetPlayerInfoByGUID(guid)
+		c = RAID_CLASS_COLORS[eClass]
 	end
 
 	if c then
@@ -120,12 +125,12 @@ local function FormatIcon(icon)
 end
 
 local function FormatSpell(spellId, spellName, spellSchool)
-	local spell = C_Spell_GetSpellInfo(spellId);
+	local spell = C_Spell_GetSpellInfo(spellId)
 	local colorArray = CombatLog_Color_ColorArrayBySchool(spellSchool, DEFAULT_COMBATLOG_FILTER_TEMPLATE)
 	local colorstr = CombatLog_Color_FloatToText(colorArray.r, colorArray.g, colorArray.b, colorArray.a)
 
-	local name = spell ~= nil and spell.name or spellName or L["Unknown"];
-	local icon = spell ~= nil and spell.iconID or "Interface\\Icons\\Temp";
+	local name = spell ~= nil and spell.name or spellName or L["Unknown"]
+	local icon = spell ~= nil and spell.iconID or "Interface\\Icons\\Temp"
 
 	return string.format("%s|c%s|Hspell:%i|h%s|h|r", FormatIcon(icon), colorstr, spellId, name)
 end
@@ -387,6 +392,8 @@ local event_formatter_table = {
 	["SPELL_CAST_SUCCESS"]		= { CastSuccess, SpellChat, SpellTooltip },
 
 	["UNIT_DIED"] 				= { UnitDied, UnitDiedChat, UnitDiedTooltip },
+	["UNIT_DESTROYED"]		= { UnitDied, UnitDiedChat, UnitDiedTooltip },
+	["UNIT_DISSIPATES"]		= { UnitDied, UnitDiedChat, UnitDiedTooltip },
 }
 
 ------------------------------------------------------------------------------
@@ -507,8 +514,8 @@ function DeathNote:CleanForChat(text)
 		gsub("(|T.-|t", ""):
 		gsub("(|Hicon:(.-):.-|h.-|h)", function(_, iconBit) return iconBitMap[tonumber(iconBit)] or "" end):
 		gsub("(|Hspell:(%d*).-|h.-|h)", function(_, id)
-			local spell = C_Spell_GetSpellInfo(id);
-			return spell ~= nil and C_Spell_GetSpellLink(id) or id;
+			local spell = C_Spell_GetSpellInfo(id)
+			return spell ~= nil and C_Spell_GetSpellLink(id) or id
 		end):
 		gsub("(|Hunit.-|h(.-)|h)", "%2"):
 		gsub("(|Haction.-|h(.-)|h)", "%2")
@@ -884,7 +891,7 @@ function DeathNote:FormatReportCombatLog(entry, channel, target)
 	else
 		local timestamp = entry.timestamp
 		local msg = string.format("[%.01fs] (%s) %s", timestamp - self.current_death.timestamp, SuffixNumber(entry.hp), self:FormatChatAmount(entry))
-		SendChatMessage(msg, channel, nil, target)
+		compat.SendChatMessage(msg, channel, nil, target)
 		self.report_line_count = self.report_line_count + 1
 	end
 end
@@ -909,7 +916,7 @@ function DeathNote:FormatReportCompact(entry, channel, target)
 			timestamp = string.format("[%.01f s .. %.01f s]", last.timestamp - self.current_death.timestamp, first.timestamp - self.current_death.timestamp)
 		end
 		]]
-		-- SendChatMessage(string.format("[%5.01f s]", last.timestamp - self.current_death.timestamp), channel, nil, target)
+		-- compat.SendChatMessage(string.format("[%5.01f s]", last.timestamp - self.current_death.timestamp), channel, nil, target)
 		timestamp = string.format("[%5.01fs]", first.timestamp - self.current_death.timestamp)
 		-- health = string.format("(%2s%%)", math.floor(first.hp/first.hpMax*100))
 		health = first.hp > 0 and string.format("(%4s)", SuffixNumber(first.hp))
@@ -993,9 +1000,9 @@ function DeathNote:FormatReportCompact(entry, channel, target)
 
 	if timestamp and msg then
 		if health then
-			SendChatMessage(self:CleanForChat(timestamp .. " " .. health .. " " .. msg), channel, nil, target)
+			compat.SendChatMessage(self:CleanForChat(timestamp .. " " .. health .. " " .. msg), channel, nil, target)
 		else
-			SendChatMessage(self:CleanForChat(timestamp .. " " .. msg), channel, nil, target)
+			compat.SendChatMessage(self:CleanForChat(timestamp .. " " .. msg), channel, nil, target)
 		end
 		
 		self.report_line_count = self.report_line_count + 1

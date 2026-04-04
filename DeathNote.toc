@@ -1,26 +1,20 @@
-﻿## Interface: 110005
-## Title: DeathNote
+﻿## Interface: 50503, 20505, 11508
+## Title: DeathNote |T236548:16|t
 ## Notes: Death analysis tool
 ## Notes-ruRU: Аддон, позволяющий анализировать смерти членов Вашей группы или рейда
 ## Author: Slaren
-## Version: @project-version@
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
+## X-ClassicAuthor: Roadblock
+## Version: 2026.04.04
+## OptionalDeps: Ace3, LibDBIcon-1.0
 ## SavedVariables: DeathNoteDB
 ## SavedVariablesPerCharacter: DeathNoteData
-## LoadManagers: AddonLoader
-## X-LoadOn-Always: delayed
-## X-Curse-Project-ID: 28314
-## X-Wago-ID: VBNBxLKx
 ## IconTexture: Interface\AddOns\DeathNote\Textures\icon
 
-#@no-lib-strip@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-#@end-no-lib-strip@
-
 libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\lib.xml
 
-#@no-lib-strip@
 libs\AceAddon-3.0\AceAddon-3.0.xml
 libs\AceComm-3.0\AceComm-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
@@ -31,10 +25,9 @@ libs\AceEvent-3.0\AceEvent-3.0.xml
 libs\AceHook-3.0\AceHook-3.0.xml
 libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
-libs\LibDropDownExtension-1.0\LibDropDownExtension.lua
-#@end-no-lib-strip@
 
 locales\localizations.xml
+Compat.lua
 DeathNote.lua
 DataCapture.lua
 UI.lua
@@ -44,3 +37,9 @@ SurvivalIDs.lua
 Data.lua
 Announce.lua
 Output.lua
+
+# (Vanilla|T134153:16|t)
+# (TBC|T136172:16|t)
+# (Wrath|T341221:16|t)
+# (Cata|T574788:16|t)
+# (Mists|T626190:16|t)
