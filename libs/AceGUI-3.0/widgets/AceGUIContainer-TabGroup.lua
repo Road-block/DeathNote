@@ -24,139 +24,139 @@ Support functions
 -------------------------------------------------------------------------------]]
 
 local function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
-	local tabName = tab:GetName()
+	local tabName = tab:GetName();
 
-	local buttonMiddle = tab.Middle or tab.middleTexture or _G[tabName.."Middle"]
-	local buttonMiddleDisabled = tab.MiddleDisabled or (tabName and _G[tabName.."MiddleDisabled"])
-	local left = tab.Left or tab.leftTexture or _G[tabName.."Left"]
-	local sideWidths = 2 * left:GetWidth()
-	local tabText = tab.Text or _G[tab:GetName().."Text"]
-	local highlightTexture = tab.HighlightTexture or (tabName and _G[tabName.."HighlightTexture"])
+	local buttonMiddle = tab.Middle or tab.middleTexture or _G[tabName.."Middle"];
+	local buttonMiddleDisabled = tab.MiddleDisabled or (tabName and _G[tabName.."MiddleDisabled"]);
+	local left = tab.Left or tab.leftTexture or _G[tabName.."Left"];
+	local sideWidths = 2 * left:GetWidth();
+	local tabText = tab.Text or _G[tab:GetName().."Text"];
+	local highlightTexture = tab.HighlightTexture or (tabName and _G[tabName.."HighlightTexture"]);
 
-	local width, tabWidth
-	local textWidth
+	local width, tabWidth;
+	local textWidth;
 	if ( absoluteTextSize ) then
-		textWidth = absoluteTextSize
+		textWidth = absoluteTextSize;
 	else
-		tabText:SetWidth(0)
-		textWidth = tabText:GetWidth()
+		tabText:SetWidth(0);
+		textWidth = tabText:GetWidth();
 	end
 	-- If there's an absolute size specified then use it
 	if ( absoluteSize ) then
 		if ( absoluteSize < sideWidths) then
-			width = 1
+			width = 1;
 			tabWidth = sideWidths
 		else
-			width = absoluteSize - sideWidths
+			width = absoluteSize - sideWidths;
 			tabWidth = absoluteSize
 		end
-		tabText:SetWidth(width)
+		tabText:SetWidth(width);
 	else
 		-- Otherwise try to use padding
 		if ( padding ) then
-			width = textWidth + padding
+			width = textWidth + padding;
 		else
-			width = textWidth + 24
+			width = textWidth + 24;
 		end
 		-- If greater than the maxWidth then cap it
 		if ( maxWidth and width > maxWidth ) then
 			if ( padding ) then
-				width = maxWidth + padding
+				width = maxWidth + padding;
 			else
-				width = maxWidth + 24
+				width = maxWidth + 24;
 			end
-			tabText:SetWidth(width)
+			tabText:SetWidth(width);
 		else
-			tabText:SetWidth(0)
+			tabText:SetWidth(0);
 		end
 		if (minWidth and width < minWidth) then
-			width = minWidth
+			width = minWidth;
 		end
-		tabWidth = width + sideWidths
+		tabWidth = width + sideWidths;
 	end
 
 	if ( buttonMiddle ) then
-		buttonMiddle:SetWidth(width)
+		buttonMiddle:SetWidth(width);
 	end
 	if ( buttonMiddleDisabled ) then
-		buttonMiddleDisabled:SetWidth(width)
+		buttonMiddleDisabled:SetWidth(width);
 	end
 
-	tab:SetWidth(tabWidth)
+	tab:SetWidth(tabWidth);
 
 	if ( highlightTexture ) then
-		highlightTexture:SetWidth(tabWidth)
+		highlightTexture:SetWidth(tabWidth);
 	end
 end
 
 local function PanelTemplates_DeselectTab(tab)
-	local name = tab:GetName()
+	local name = tab:GetName();
 
-	local left = tab.Left or _G[name.."Left"]
-	local middle = tab.Middle or _G[name.."Middle"]
-	local right = tab.Right or _G[name.."Right"]
-	left:Show()
-	middle:Show()
-	right:Show()
-	--tab:UnlockHighlight()
-	tab:Enable()
-	local text = tab.Text or _G[name.."Text"]
-	text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2))
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Show();
+	middle:Show();
+	right:Show();
+	--tab:UnlockHighlight();
+	tab:Enable();
+	local text = tab.Text or _G[name.."Text"];
+	text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
 
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"]
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"]
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"]
-	leftDisabled:Hide()
-	middleDisabled:Hide()
-	rightDisabled:Hide()
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Hide();
+	middleDisabled:Hide();
+	rightDisabled:Hide();
 end
 
 local function PanelTemplates_SelectTab(tab)
-	local name = tab:GetName()
+	local name = tab:GetName();
 
-	local left = tab.Left or _G[name.."Left"]
-	local middle = tab.Middle or _G[name.."Middle"]
-	local right = tab.Right or _G[name.."Right"]
-	left:Hide()
-	middle:Hide()
-	right:Hide()
-	--tab:LockHighlight()
-	tab:Disable()
-	tab:SetDisabledFontObject(GameFontHighlightSmall)
-	local text = tab.Text or _G[name.."Text"]
-	text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3))
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Hide();
+	middle:Hide();
+	right:Hide();
+	--tab:LockHighlight();
+	tab:Disable();
+	tab:SetDisabledFontObject(GameFontHighlightSmall);
+	local text = tab.Text or _G[name.."Text"];
+	text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
 
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"]
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"]
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"]
-	leftDisabled:Show()
-	middleDisabled:Show()
-	rightDisabled:Show()
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Show();
+	middleDisabled:Show();
+	rightDisabled:Show();
 
 	if GameTooltip:IsOwned(tab) then
-		GameTooltip:Hide()
+		GameTooltip:Hide();
 	end
 end
 
 local function PanelTemplates_SetDisabledTabState(tab)
-	local name = tab:GetName()
-	local left = tab.Left or _G[name.."Left"]
-	local middle = tab.Middle or _G[name.."Middle"]
-	local right = tab.Right or _G[name.."Right"]
-	left:Show()
-	middle:Show()
-	right:Show()
-	--tab:UnlockHighlight()
-	tab:Disable()
-	tab.text = tab:GetText()
+	local name = tab:GetName();
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Show();
+	middle:Show();
+	right:Show();
+	--tab:UnlockHighlight();
+	tab:Disable();
+	tab.text = tab:GetText();
 	-- Gray out text
-	tab:SetDisabledFontObject(GameFontDisableSmall)
-	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"]
-	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"]
-	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"]
-	leftDisabled:Hide()
-	middleDisabled:Hide()
-	rightDisabled:Hide()
+	tab:SetDisabledFontObject(GameFontDisableSmall);
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Hide();
+	middleDisabled:Hide();
+	rightDisabled:Hide();
 end
 
 local function UpdateTabLook(frame)

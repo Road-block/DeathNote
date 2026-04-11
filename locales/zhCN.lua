@@ -1,11 +1,7 @@
 local addonName, addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhCN")
 L = L or {}
---[===[@non-debug@
-@localization(locale="zhCN", format="lua_additive_table", handle-unlocalized="english", table-name="L")@
---@end-non-debug@]===]
---@debug@
-L = L or {}
+
 L["< 1min"] = "小于1分钟"
 L["< 5sec"] = "小于5秒钟"
 L["> 1min"] = "大于1分钟"
@@ -144,6 +140,9 @@ L["Value must be a number"] = "值必须是数字"
 L["X offset"] = "横向位移"
 L["Y offset"] = "纵向位移"
 L["Yes"] = "是"
+--[[Translation missing --]]
+L["Show in the unit popup menu"] = "Show in the unit popup menu"
+--[[Translation missing --]]
 L["Hide Minimap button"] = "Hide Minimap button"
+--[[Translation missing --]]
 L["MINIMAP_ICON_TOOLTIP"] = "|cFFEDA55FClick|r to open Death Note.|n|cFFEDA55FRight-Click|r to show options.|n|cFFEDA55FShift-Click|r to optimize data.|n|cFFEDA55FCtrl-Click|r to reset data."
---@end-debug@

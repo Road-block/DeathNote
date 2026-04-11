@@ -292,7 +292,7 @@ function ChatThrottleLib.Hook_SendAddonMessage(prefix, text, chattype, destinati
 		return
 	end
 	local self = ChatThrottleLib
-	local size = tostring(text or ""):len() + tostring(prefix or ""):len()
+	local size = tostring(text or ""):len() + tostring(prefix or ""):len();
 	size = size + tostring(destination or ""):len() + self.MSG_OVERHEAD
 	self.avail = self.avail - size
 	self.nBypass = self.nBypass + size	-- just a statistic
@@ -312,7 +312,7 @@ end
 
 function ChatThrottleLib:UpdateAvail()
 	local now = GetTime()
-	local MAX_CPS = self.MAX_CPS
+	local MAX_CPS = self.MAX_CPS;
 	local newavail = MAX_CPS * (now - self.LastAvailUpdate)
 	local avail = self.avail
 
@@ -617,7 +617,7 @@ local function SendAddonMessageInternal(self, sendFunction, prio, prefix, text, 
 	msg[2] = text
 	msg[3] = chattype
 	msg[4] = target
-	msg.n = (target~=nil) and 4 or 3
+	msg.n = (target~=nil) and 4 or 3;
 	msg.nSize = nSize
 	msg.callbackFn = callbackFn
 	msg.callbackArg = callbackArg
