@@ -1,10 +1,11 @@
-﻿## Interface: 50503, 20505, 11508
+﻿## Interface: 50503,20505,11508,50504
 ## Title: DeathNote |T236548:16|t
 ## Notes: Death analysis tool
 ## Notes-ruRU: Аддон, позволяющий анализировать смерти членов Вашей группы или рейда
 ## Author: Slaren
 ## X-ClassicAuthor: Roadblock
-## Version: 2026.04.11
+## Version: 2026.04.21
+## Category: Combat
 ## OptionalDeps: Ace3, LibDBIcon-1.0
 ## SavedVariables: DeathNoteDB
 ## SavedVariablesPerCharacter: DeathNoteData

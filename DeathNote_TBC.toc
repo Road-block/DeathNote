@@ -5,6 +5,7 @@
 ## Author: Slaren
 ## X-ClassicAuthor: Roadblock
 ## Version: 20505.2
+## Category: Combat
 ## OptionalDeps: Ace3, LibDBIcon-1.0
 ## SavedVariables: DeathNoteDB
 ## SavedVariablesPerCharacter: DeathNoteData
